@@ -53,7 +53,7 @@
             <?php endif; ?>			
         </div><!-- .site-branding -->
         
-        <nav role="navigation" class="site-navigation main-navigation uk-navbar-container">
+        <nav role="navigation" class="site-navigation main-navigation uk-navbar-container uk-navbar-transparent">
         <!-- This is a button toggling the modal -->
         <button uk-toggle="target: #my-id" type="button" class="uk-align-right uk-hidden@m"><i class="fas fa-bars"></i></button>
 			<?php

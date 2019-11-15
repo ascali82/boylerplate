@@ -29,30 +29,29 @@ function theme_comment( $comment, $args, $depth ) {
 	?>
 	<li id="li-comment-<?php comment_ID(); ?>">
 		<article  id="comment-<?php comment_ID(); ?>" <?php $classes = array(
-		'uk-comment',
-		'uk-visible-toggle'
-	); comment_class( $classes ); ?>>
-	<header class="uk-comment-header uk-position-relative">
-	<div class="uk-grid-medium uk-flex-middle comment-author vcard" uk-grid>
-	<div class="uk-width-auto">
-	<?php $args  = array(
-    //    'size'            => 80,
-        'class'         => 'uk-comment-avatar',
-); echo get_avatar( $comment, $args ); ?> 
- </div>
- <div class="uk-width-expand">
- <?php printf( __( '%s <span class="says">says:</span>', 'boylerplate' ), sprintf( '<h4 class="uk-comment-title uk-margin-remove">%s</h4>', get_comment_author_link() ) ); ?>
+            'uk-comment',
+            'uk-visible-toggle'
+	       ); comment_class( $classes ); ?> tabindex="-1">
+	       <header class="uk-comment-header uk-position-relative">
+	           <div class="uk-grid-medium uk-flex-middle" uk-grid>
+	               <div class="uk-width-auto">
+                        <?php echo get_avatar( $comment, $args['96'], '', 'porco dio', array('class' => 'uk-comment-avatar') ); ?> 
+                   </div>
+                   <div class="uk-width-expand">
+                         <?php printf( __( '%s <span class="says">says:</span>', 'boylerplate' ), sprintf( '<h4 class="uk-comment-title uk-margin-remove">%s</h4>', get_comment_author_link() ) ); ?>
                         <p class="uk-comment-meta uk-margin-remove-top"><a class="uk-link-reset" href="#">12 days ago</a></p>
-                    </div>
+                   </div>
                 </div>
                 <div class="uk-position-top-right uk-position-small uk-hidden-hover"><a class="uk-link-muted" href="#">Reply</a></div>
             </header>
 
-			<div class="comment-content">
+			<div class="uk-comment-body comment-content ">
 				<?php if ( $comment->comment_approved == '0' ) : ?>
 					<em><?php _e( 'Your comment is awaiting moderation.', 'boylerplate' ); ?></em>
 					<br />
 				<?php endif; ?>
+				<?php comment_text(); ?>
+			</div>
 				<div class="comment-meta commentmetadata">
 					
 					<a href="<?php echo esc_url( get_comment_link( $comment->comment_ID ) ); ?>"><time pubdate datetime="<?php comment_time( 'c' ); ?>">
@@ -63,11 +62,11 @@ function theme_comment( $comment, $args, $depth ) {
 					<?php edit_comment_link( __( 'Edit', 'boylerplate' ), ' ' );
 					?>
 				</div><!-- .comment-meta .commentmetadata -->
-				<?php comment_text(); ?>
+				
 				<div class="reply">
-					<?php comment_reply_link( array_merge( $args, array( 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
+					<?php // comment_reply_link( array_merge( $args, array( 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
 				</div><!-- .reply -->
-			</div>
+
 		</article><!-- #comment-## -->
 
 	<?php

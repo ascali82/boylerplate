@@ -19,13 +19,13 @@ if ( post_password_required() ) {
 }
 ?>
 
-<section id="comments" class="comments-area">
-
+<div  id="comments" class="comments-areauk-container">
 	<?php
 	// You can start editing here -- including this comment!
 	if ( have_comments() ) :
 		?>
-		<h2 class="comments-title">
+		<h2 class="comments-title uk-width-1-1">
+		<a class="uk-button uk-button-text" href="#comment-accordion">
 			<?php
 			$_s_comment_count = get_comments_number();
 			if ( '1' === $_s_comment_count ) {
@@ -43,11 +43,12 @@ if ( post_password_required() ) {
 				);
 			}
 			?>
+			</a>
 		</h2><!-- .comments-title -->
 
 		<?php the_comments_navigation(); ?>
 
-		<ul class="comment-list uk-comment-list">
+		<ul id="comment" class="comment-list uk-comment-list">
 			<?php
 			wp_list_comments( 'type=comment&callback=theme_comment' ); ?>
 		</ul><!-- .comment-list -->
@@ -64,4 +65,4 @@ if ( post_password_required() ) {
 	comment_form();
 	?>
 
-</section><!-- #comments -->
+</div><!-- #comments -->
