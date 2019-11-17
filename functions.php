@@ -223,75 +223,96 @@ require get_template_directory() . '/inc/comments-manager.php';
  */
 require get_template_directory() . '/inc/template-tags.php';
 
-// Pagination
+/*=============================================
+=            PAGINATION			            =
+* @param (int) $range
+=============================================*/
 
-function wpbeginner_numeric_posts_nav() {
- 
-    if( is_singular() )
-        return;
- 
-    global $wp_query;
- 
-    /** Stop execution if there's only 1 page */
-    if( $wp_query->max_num_pages <= 1 )
-        return;
- 
-    $paged = get_query_var( 'paged' ) ? absint( get_query_var( 'paged' ) ) : 1;
-    $max   = intval( $wp_query->max_num_pages );
- 
-    /** Add current page to the array */
-    if ( $paged >= 1 )
-        $links[] = $paged;
- 
-    /** Add the pages around the current page to the array */
-    if ( $paged >= 3 ) {
-        $links[] = $paged - 1;
-        $links[] = $paged - 2;
+function theme_pagination( $range = 5 ) {
+
+    global $paged, $wp_query, $post;
+    
+    $nav_class = ( is_single() ) ? 'post-navigation uk-pagination' : 'paging-navigation uk-pagination uk-flex-center';
+
+	// Don't print empty markup on single pages if there's nowhere to navigate.
+	if ( is_single() ) {
+		$previous = ( is_attachment() ) ? get_post( $post->post_parent ) : get_adjacent_post( false, '', true );
+		$next = get_adjacent_post( false, '', false );
+
+		if ( ! $next && ! $previous )
+			return;
+	}
+
+	// Don't print empty markup in archives if there's only one page.
+	if ( $wp_query->max_num_pages <= 1 && ( is_home() || is_archive() || is_search() ) )
+		return;
+
+    echo '<div id="pagination"><ul class="'. $nav_class .'" uk-margin>' . "\n";
+    
+    if ( is_single() ) { // navigation links for single posts
+
+        $prev_post = get_adjacent_post(false, '', true);
+        if(!empty($prev_post)) {
+        echo '<li><a href="' . get_permalink($prev_post->ID) . '" title="' . $prev_post->post_title . '"><span class="uk-margin-small-right" uk-pagination-previous></span>' . $prev_post->post_title . '</a></li>'; }
+
+        $next_post = get_adjacent_post(false, '', false);
+        if(!empty($next_post)) {
+        echo '<li class="uk-margin-auto-left"><a href="' . get_permalink($next_post->ID) . '" title="' . $next_post->post_title . '">' . $next_post->post_title . '<span class="uk-margin-small-left" uk-pagination-next></span></a></li>'; }
+
     }
+    
+    elseif ( $wp_query->max_num_pages > 1 && ( is_home() || is_archive() || is_search() ) ) { // navigation links for home, archive, and search pages
+        
+		// How much pages do we have?
+		if ( !$max_page )
+			$max_page = $wp_query->max_num_pages;
+        
+        /** Previous Page Link */
+        if ( get_previous_posts_link() )
+            printf( '<li>%s</li>' . "\n", get_previous_posts_link('<span title="Previous page" uk-pagination-previous></span><span class="uk-visible@m uk-margin-small-left">Indietro</span>') );
+        
+		// We need the sliding effect only if there are more pages than is the sliding range
+		if ( $max_page > $range ) :
+			// When closer to the beginning
+			if ( $paged < $range ) :
+				for ( $i = 1; $i <= ($range + 1); $i++ ) {
+                    $liclass = $i == $paged ? 'uk-active' : ''; 
+					$class = $i == $paged ? 'current' : '';
+					echo '<li class="'.$liclass.'"><a href="'.get_pagenum_link($i).'" class="paged-num '.$class.'" title="'.$i.'"> '.$i.' </a></li>';
+				}
+			// When closer to the end
+			elseif ( $paged >= ( $max_page - ceil($range/2)) ) :
+				for ( $i = $max_page - $range; $i <= $max_page; $i++ ){
+                    $liclass = $i == $paged ? 'uk-active' : '';
+					$class = $i == $paged ? 'current' : '';
+					echo '<li class="'.$liclass.'"><a href="'.get_pagenum_link($i).'" class="paged-num '.$class.'" title="'.$i.'"> '.$i.' </a></li>';
+				}
+			endif;
+		// Somewhere in the middle
+		elseif ( $paged >= $range && $paged < ( $max_page - ceil($range/2)) ) :
+			for ( $i = ($paged - ceil($range/2)); $i <= ($paged + ceil($range/2)); $i++ ) {
+                $liclass = $i == $paged ? 'uk-active' : '';
+				$class = $i == $paged ? 'current' : '';
+				echo '<li class="'.$liclass.'"><a href="'.get_pagenum_link($i).'" class="paged-num '.$class.'" title="'.$i.'"> '.$i.' </a></li>';
+			}
+		// Less pages than the range, no sliding effect needed
+		else :
+			for ( $i = 1; $i <= $max_page; $i++ ) {
+                $liclass = $i == $paged ? 'uk-active' : '';
+				$class = $i == $paged ? 'current' : '';
+				echo '<li class="'.$liclass.'"><a href="'.get_pagenum_link($i).'" class="paged-num '.$class.'" title="'.$i.'"> '.$i.' </a></li>';
+			}
+		endif;
+        
+        /** Next Page Link */
+        if ( get_next_posts_link() ) { 
+                        
+                printf( '<li>%s</li>' . "\n", get_next_posts_link('<span title="Next Page"  uk-pagination-next><span class="uk-visible@m uk-margin-small-right">Avanti</span></span>') );
  
-    if ( ( $paged + 2 ) <= $max ) {
-        $links[] = $paged + 2;
-        $links[] = $paged + 1;
+        }
     }
- 
-    echo '<div class="navigation"><ul class="uk-pagination uk-flex-center" uk-margin>' . "\n";
- 
-    /** Previous Post Link */
-    if ( get_previous_posts_link() )
-        printf( '<li>%s</li>' . "\n", get_previous_posts_link() );
- 
-    /** Link to first page, plus ellipses if necessary */
-    if ( ! in_array( 1, $links ) ) {
-        $class = 1 == $paged ? ' class="uk-active"' : '';
- 
-        printf( '<li%s><a href="%s"><span uk-pagination-previous></span></a></li>' . "\n", $class, esc_url( get_pagenum_link( 1 ) ), '1' );
- 
-        if ( ! in_array( 2, $links ) )
-            echo '<li>…</li>';
-    }
- 
-    /** Link to current page, plus 2 pages in either direction if necessary */
-    sort( $links );
-    foreach ( (array) $links as $link ) {
-        $class = $paged == $link ? ' class="uk-active"' : '';
-        printf( '<li%s><a href="%s">%s</a></li>' . "\n", $class, esc_url( get_pagenum_link( $link ) ), $link );
-    }
- 
-    /** Link to last page, plus ellipses if necessary */
-    if ( ! in_array( $max, $links ) ) {
-        if ( ! in_array( $max - 1, $links ) )
-            echo '<li>…</li>' . "\n";
- 
-        $class = $paged == $max ? ' class="uk-active"' : '';
-        printf( '<li%s><a href="%s"><span uk-pagination-next></span></a></li>' . "\n", $class, esc_url( get_pagenum_link( $max ) ), $max );
-    }
- 
-    /** Next Post Link */
-    if ( get_next_posts_link() )
-        printf( '<li>%s</li>' . "\n", get_next_posts_link() );
- 
+    
     echo '</ul></div>' . "\n";
- 
 }
 
 /*=============================================

@@ -40,7 +40,7 @@ get_header();
 			endwhile;
 		//	the_posts_navigation();
 		//	learnplus_blog_pagination();
-		wpbeginner_numeric_posts_nav();
+		theme_pagination();
 		else :
 			get_template_part( 'template-parts/content', 'none' );
 		endif;
