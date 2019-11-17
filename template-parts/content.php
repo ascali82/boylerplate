@@ -1,11 +1,11 @@
 
-<article id="post-<?php the_ID(); ?>" <?php post_class('uk-article'); ?>>
+<article id="post-<?php the_ID(); ?>" <?php post_class('uk-section uk-section-small uk-padding-remove-top'); ?>>
 	<header class="entry-header">
 		<?php
 		if ( is_singular() ) :
 			the_title( '<h1 class="entry-title uk-article-title">', '</h1>' );
 		else :
-			the_title( '<h2 class="entry-title uk-article-title"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' );
+			the_title( '<h2 class="entry-title uk-margin-remove-adjacent uk-text-bold uk-margin-small-bottom"><a class="uk-link-reset" href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' );
 		endif;
         ?>
 	</header><!-- .entry-header -->
@@ -69,4 +69,5 @@
             </span>
         </p>
 	</footer><!-- .entry-footer -->
+    <hr>
 </article><!-- #post-<?php the_ID(); ?> -->
